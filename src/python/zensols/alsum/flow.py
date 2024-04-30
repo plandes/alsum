@@ -84,6 +84,7 @@ class FlowGraphData(Dictable):
             # reversed source doc nodes have no flow, but their children might
             is_doc_edge: bool = isinstance(ge, DocumentGraphEdge)
             is_src: bool = ge.id in src_edges
+            # TODO: doc edges that should be deleted with children flow are not
             if not is_src or not is_doc_edge:
                 if logger.isEnabledFor(logging.DEBUG):
                     ids = ', '.join(map(to_str, nes))
