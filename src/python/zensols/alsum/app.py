@@ -31,7 +31,7 @@ class Application(object):
         from .flow import FlowGraphData
         self.flow_graph_stash.prune = prune
         flow: FlowGraphData = self.flow_graph_stash[key]
-        flow.render(True)
+        flow.render()
 
 
 @dataclass
@@ -40,7 +40,15 @@ class PrototypeApplication(object):
 
     app: Application = field()
 
+    def _tmp(self):
+        from .flow import FlowGraphData
+        self.app.flow_graph_stash.prune = False
+        flow: FlowGraphData = self.app.flow_graph_stash['earthquake']
+        flow.render()
+
     def proto(self, run: int = 0):
         """Prototype test."""
-        {0: lambda: self.app.render('earthquake'),
+        {
+            0: self._tmp,
+            1: lambda: self.app.render('earthquake'),
          }[run]()
