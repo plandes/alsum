@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 import logging
 from igraph import Vertex, Edge
 from zensols.config import Dictable
-from zensols.persist import persisted, Stash, ReadOnlyStash, PrimeableStash
+from zensols.persist import persisted, Stash, ReadOnlyStash
 from zensols.calamr import (
     GraphNode, GraphEdge, DocumentGraph, DocumentGraphEdge, TerminalGraphEdge,
     FlowGraphResult
