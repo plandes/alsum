@@ -51,4 +51,4 @@ class PrototypeApplication(object):
         {
             0: self._tmp,
             1: lambda: self.app.render('earthquake'),
-         }[run]()
+        }[run]()
