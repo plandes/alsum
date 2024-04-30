@@ -28,7 +28,7 @@ class Application(object):
         :param prune: whether or not to prune 0-flow edges
 
         """
-        from .flow import ReducedGraph
+        from .graph import ReducedGraph
         self.reduced_graph_stash.prune = prune
         flow: ReducedGraph = self.reduced_graph_stash[key]
         flow.render()
@@ -41,7 +41,7 @@ class PrototypeApplication(object):
     app: Application = field()
 
     def _tmp(self):
-        from .flow import ReducedGraph
+        from .graph import ReducedGraph
         self.app.reduced_graph_stash.prune = False
         flow: ReducedGraph = self.app.reduced_graph_stash['earthquake']
         flow.render()
