@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class FlowGraphData(Dictable):
+class ReducedGraph(Dictable):
     """A utility class to analyze an aligned graph.
 
     """
@@ -144,8 +144,8 @@ class FlowGraphData(Dictable):
 
 
 @dataclass
-class FlowGraphDataStash(ReadOnlyStash):
-    """CRUDs instances of :class:`.FlowGraphResult`.
+class ReducedGraphStash(ReadOnlyStash):
+    """CRUDs instances of :class:`.ReducedGraph`.
 
     """
     factory: Stash = field()
@@ -158,12 +158,12 @@ class FlowGraphDataStash(ReadOnlyStash):
     """The target graph name to analyze used in :obj:`child_doc_graph`."""
 
     prune: bool = field()
-    """Whether :obj:`FlowGraphData.doc_graph` will have 0-flow edges pruned."""
+    """Whether :obj:`ReducedGraph.doc_graph` will have 0-flow edges pruned."""
 
-    def load(self, name: str) -> FlowGraphData:
+    def load(self, name: str) -> ReducedGraph:
         res: FlowGraphResult = self.factory.load(name)
         if res is not None:
-            return FlowGraphData(
+            return ReducedGraph(
                 renderer=self.renderer,
                 child_graph_name=self.child_graph_name,
                 key=name,

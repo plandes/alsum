@@ -3,8 +3,8 @@
 
 ## Alsum
 #
-alsum_flow_graph_stash:
-  class_name: zensols.alsum.flow.FlowGraphDataStash
+alsum_reduced_graph_stash:
+  class_name: zensols.alsum.flow.ReducedGraphStash
   factory: ${calamr_resource:flow_results_stash}
   renderer: 'instance: calamr_graph_render_${calamr_default:renderer}'
   child_graph_name: reversed_source

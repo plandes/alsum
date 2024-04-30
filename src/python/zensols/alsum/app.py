@@ -17,7 +17,7 @@ class Application(object):
     (CALAMR) alignment.
 
     """
-    flow_graph_stash: Stash = field()
+    reduced_graph_stash: Stash = field()
     """CRUDs instances of :class:`~.flow.FlowGraphResult`."""
 
     def render(self, key: str, prune: bool = True):
@@ -28,9 +28,9 @@ class Application(object):
         :param prune: whether or not to prune 0-flow edges
 
         """
-        from .flow import FlowGraphData
-        self.flow_graph_stash.prune = prune
-        flow: FlowGraphData = self.flow_graph_stash[key]
+        from .flow import ReducedGraph
+        self.reduced_graph_stash.prune = prune
+        flow: ReducedGraph = self.reduced_graph_stash[key]
         flow.render()
 
 
@@ -41,9 +41,9 @@ class PrototypeApplication(object):
     app: Application = field()
 
     def _tmp(self):
-        from .flow import FlowGraphData
-        self.app.flow_graph_stash.prune = False
-        flow: FlowGraphData = self.app.flow_graph_stash['earthquake']
+        from .flow import ReducedGraph
+        self.app.reduced_graph_stash.prune = False
+        flow: ReducedGraph = self.app.reduced_graph_stash['earthquake']
         flow.render()
 
     def proto(self, run: int = 0):
