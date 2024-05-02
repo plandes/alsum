@@ -122,7 +122,9 @@ class ReducedGraph(Dictable):
         edges.
 
         """
+        # reset attributes for consistent IDs in clone
         self.graph_attrib_context.reset_attrib_id()
+        # create reduced graph from a clone of the child graph for modification
         doc_graph: DocumentGraph = self.child_doc_graph.clone(
             reverse_edges=True, deep=True)
         # remove terminal nodes and edges
