@@ -3,17 +3,22 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Tuple, List, Dict, Iterable
+from typing import Tuple, List, Dict, Set, Iterable, Type
 from dataclasses import dataclass, field
 import logging
+from pathlib import Path
+import collections
+from frozendict import frozendict
 from igraph import Vertex, Edge
 from zensols.config import Dictable
 from zensols.persist import persisted, Stash, ReadOnlyStash
 from zensols.calamr import (
-    GraphNode, GraphEdge, DocumentGraph, DocumentGraphEdge, TerminalGraphEdge,
-    FlowGraphResult
+    GraphNode, GraphEdge, DocumentGraph, DocumentGraphEdge,
+    TerminalGraphEdge, ComponentAlignmentGraphEdge,
+    GraphComponent, FlowGraphResult
 )
 from zensols.calamr.render.base import RenderContext, GraphRenderer, rendergroup
+from zensols.calamr.summary.factory import SummaryConstants
 
 logger = logging.getLogger(__name__)
 
@@ -40,11 +45,29 @@ class ReducedGraph(Dictable):
     prune: bool = field()
     """Whether :obj:`doc_graph` will have 0-flow edges pruned."""
 
+    @property
+    @persisted('_edges_by_type', transient=True)
+    def edges_by_type(self) -> Dict[Type[GraphEdge], Set[Edge]]:
+        edges: Dict[Type[GraphEdge], Set[GraphEdge]] = \
+            collections.defaultdict(list)
+        doc_graph: DocumentGraph = self.child_doc_graph
+        e: Edge
+        ge: GraphEdge
+        for e, ge in doc_graph.es.items():
+            if isinstance(ge, TerminalGraphEdge):
+                edges[TerminalGraphEdge].append(e)
+            elif isinstance(ge, ComponentAlignmentGraphEdge):
+                edges[ComponentAlignmentGraphEdge].append(e)
+        return frozendict(map(lambda t: (t[0], frozenset(t[1])), edges.items()))
+
     def _delete_terminals(self, doc_graph: DocumentGraph):
         """Remove the source (S) and sink (T) nodes and their flow edges."""
-        edges: Iterable[GraphEdge] = filter(
-            lambda e: isinstance(e, TerminalGraphEdge), doc_graph.es.values())
-        doc_graph.delete_edges(edges, True)
+        attr: str = GraphComponent.GRAPH_ATTRIB_NAME
+        edges: Set[Edge] = self.edges_by_type[TerminalGraphEdge]
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f'deleting {len(edges)} edges')
+        doc_graph.delete_edges(map(lambda e: e[attr], edges), True)
+        doc_graph.invalidate()
 
     def _prune_graph(self, doc_graph: DocumentGraph):
         """Remove all 0-flow links, except for document edges in the source
@@ -62,7 +85,8 @@ class ReducedGraph(Dictable):
         # populated with what to delete
         to_del: List[GraphEdge] = []
         # source igraph edge IDs to to avoid remove the component's doc edges
-        src_edges: Dict[int, int] = doc_graph.components_by_name['source'].\
+        src_edges: Dict[int, int] = doc_graph.\
+            components_by_name[SummaryConstants.SOURCE_COMP].\
             graph_edge_id_to_edge_ref
         # 0-flow deletion candidates
         edges: Iterable[Tuple[Edge, GraphEdge], ...] = filter(
@@ -121,10 +145,20 @@ class ReducedGraph(Dictable):
             self._prune_graph(doc_graph)
         return doc_graph
 
-    def render(self, include_child: bool = False):
+    def render(self, include_child: bool = False, graph_id: str = 'graph',
+               display: bool = True, directory: Path = None):
         """Render :obj:`doc_graph` and optionally :obj:`child_doc_graph`.
 
         :param include_child: if ``True`` render :obj:`child_doc_graph`
+
+        :param graph_id: a unique identifier prefixed to files generated if none
+                         provided in the call method
+
+        :param display: whether to display the files after generated
+
+        :param directory: the directory to create the files in place of the
+                          temporary directory; if provided the directory is not
+                          removed after the graphs are rendered
 
         """
         child_title: str = self.child_graph_name.replace('_', ' ').capitalize()
@@ -137,7 +171,8 @@ class ReducedGraph(Dictable):
         ctxs.append(RenderContext(
             doc_graph=self.doc_graph,
             heading=head))
-        with rendergroup(self.renderer) as rg:
+        with rendergroup(self.renderer, graph_id=graph_id, display=display,
+                         directory=directory) as rg:
             ctx: RenderContext
             for ctx in ctxs:
                 rg(ctx)
