@@ -3,19 +3,17 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Tuple, List, Dict, Set, Iterable, Type
+from typing import Tuple, List, Dict, Iterable
 from dataclasses import dataclass, field
 import logging
 from pathlib import Path
-import collections
-from frozendict import frozendict
 from igraph import Vertex, Edge
 from zensols.config import Dictable
 from zensols.persist import persisted, Stash, ReadOnlyStash
 from zensols.calamr import (
     GraphNode, GraphEdge, DocumentGraph, DocumentGraphEdge,
-    TerminalGraphEdge, ComponentAlignmentGraphEdge,
-    GraphComponent, FlowGraphResult
+    TerminalGraphEdge, FlowGraphResult,
+    GraphAttributeContext,
 )
 from zensols.calamr.render.base import RenderContext, GraphRenderer, rendergroup
 from zensols.calamr.summary.factory import SummaryConstants
@@ -28,6 +26,9 @@ class ReducedGraph(Dictable):
     """A utility class to analyze an aligned graph.
 
     """
+    graph_attrib_context: GraphAttributeContext = field()
+    """The graph attribute context, which is used to reset attribute IDs."""
+
     renderer: GraphRenderer = field(repr=False)
     """Used to render the :obj:`graph_result`."""
 
@@ -45,29 +46,14 @@ class ReducedGraph(Dictable):
     prune: bool = field()
     """Whether :obj:`doc_graph` will have 0-flow edges pruned."""
 
-    @property
-    @persisted('_edges_by_type', transient=True)
-    def edges_by_type(self) -> Dict[Type[GraphEdge], Set[Edge]]:
-        edges: Dict[Type[GraphEdge], Set[GraphEdge]] = \
-            collections.defaultdict(list)
-        doc_graph: DocumentGraph = self.child_doc_graph
-        e: Edge
-        ge: GraphEdge
-        for e, ge in doc_graph.es.items():
-            if isinstance(ge, TerminalGraphEdge):
-                edges[TerminalGraphEdge].append(e)
-            elif isinstance(ge, ComponentAlignmentGraphEdge):
-                edges[ComponentAlignmentGraphEdge].append(e)
-        return frozendict(map(lambda t: (t[0], frozenset(t[1])), edges.items()))
-
     def _delete_terminals(self, doc_graph: DocumentGraph):
         """Remove the source (S) and sink (T) nodes and their flow edges."""
-        attr: str = GraphComponent.GRAPH_ATTRIB_NAME
-        edges: Set[Edge] = self.edges_by_type[TerminalGraphEdge]
+        edges: Tuple[GraphEdge, ...] = tuple(filter(
+            lambda ge: isinstance(ge, TerminalGraphEdge),
+            doc_graph.es.values()))
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(f'deleting {len(edges)} edges')
-        doc_graph.delete_edges(map(lambda e: e[attr], edges), True)
-        doc_graph.invalidate()
+        doc_graph.delete_edges(edges)
 
     def _prune_graph(self, doc_graph: DocumentGraph):
         """Remove all 0-flow links, except for document edges in the source
@@ -136,6 +122,7 @@ class ReducedGraph(Dictable):
         edges.
 
         """
+        self.graph_attrib_context.reset_attrib_id()
         doc_graph: DocumentGraph = self.child_doc_graph.clone(
             reverse_edges=True, deep=True)
         # remove terminal nodes and edges
@@ -183,6 +170,9 @@ class ReducedGraphStash(ReadOnlyStash):
     """CRUDs instances of :class:`.ReducedGraph`.
 
     """
+    graph_attrib_context: GraphAttributeContext = field()
+    """The graph attribute context, which is used to reset attribute IDs."""
+
     factory: Stash = field()
     """A stash that CRUDs :class:`.FlowGraphResult`."""
 
@@ -199,6 +189,7 @@ class ReducedGraphStash(ReadOnlyStash):
         res: FlowGraphResult = self.factory.load(name)
         if res is not None:
             return ReducedGraph(
+                graph_attrib_context=self.graph_attrib_context,
                 renderer=self.renderer,
                 child_graph_name=self.child_graph_name,
                 key=name,
