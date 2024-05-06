@@ -3,7 +3,7 @@
 """
 __author__ = 'Paul Landes'
 
-from typing import Tuple, List, Dict, Iterable
+from typing import Tuple, List, Dict, Iterable, Optional
 from dataclasses import dataclass, field
 import logging
 from pathlib import Path
@@ -13,7 +13,7 @@ from zensols.persist import persisted, Stash, ReadOnlyStash
 from zensols.calamr import (
     GraphNode, GraphEdge, DocumentGraph, DocumentGraphEdge,
     TerminalGraphEdge, FlowGraphResult,
-    GraphAttributeContext,
+    GraphAttributeContext, ComponentAlignmentFailure,
 )
 from zensols.calamr.render.base import RenderContext, GraphRenderer, rendergroup
 from zensols.calamr.summary.factory import SummaryConstants
@@ -106,6 +106,18 @@ class ReducedGraph(Dictable):
         if logger.isEnabledFor(logging.INFO):
             logger.info(f'pruning {len(to_del)} edges')
         doc_graph.delete_edges(to_del, True)
+
+    @property
+    def is_error(self) -> bool:
+        """Whether the graph resulted in an error."""
+        return self.graph_result.is_error
+
+    @property
+    def failure(self) -> Optional[ComponentAlignmentFailure]:
+        """What caused the alignment to fail, or ``None`` if it was a success.
+
+        """
+        return self.graph_result.failure
 
     @property
     def child_doc_graph(self) -> DocumentGraph:
