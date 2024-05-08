@@ -9,7 +9,9 @@ import logging
 from pathlib import Path
 from igraph import Vertex, Edge
 from zensols.config import Dictable
-from zensols.persist import persisted, Stash, ReadOnlyStash
+from zensols.persist import (
+    persisted, PersistableContainer, Stash, ReadOnlyStash
+)
 from zensols.calamr import (
     GraphNode, GraphEdge, DocumentGraph, DocumentGraphEdge,
     TerminalGraphEdge, FlowGraphResult,
@@ -22,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ReducedGraph(Dictable):
+class ReducedGraph(PersistableContainer, Dictable):
     """A utility class to analyze an aligned graph.
 
     """
@@ -45,6 +47,9 @@ class ReducedGraph(Dictable):
 
     prune: bool = field()
     """Whether :obj:`doc_graph` will have 0-flow edges pruned."""
+
+    def __post_init__(self):
+        super().__init__()
 
     def _delete_terminals(self, doc_graph: DocumentGraph):
         """Remove the source (S) and sink (T) nodes and their flow edges."""
@@ -177,6 +182,13 @@ class ReducedGraph(Dictable):
             ctx: RenderContext
             for ctx in ctxs:
                 rg(ctx)
+
+    def deallocate(self):
+        super().deallocate()
+        self._try_deallocate(self.graph_result)
+        del self.graph_attrib_context
+        del self.renderer
+        del self.graph_result
 
 
 @dataclass
