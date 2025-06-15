@@ -32,23 +32,3 @@ class Application(object):
         self.reduced_graph_stash.prune = prune
         flow: ReducedGraph = self.reduced_graph_stash[key]
         flow.render()
-
-
-@dataclass
-class PrototypeApplication(object):
-    CLI_META = {'is_usage_visible': False}
-
-    app: Application = field()
-
-    def _tmp(self):
-        from .graph import ReducedGraph
-        self.app.reduced_graph_stash.prune = False
-        flow: ReducedGraph = self.app.reduced_graph_stash['earthquake']
-        flow.render()
-
-    def proto(self, run: int = 0):
-        """Prototype test."""
-        {
-            0: self._tmp,
-            1: lambda: self.app.render('earthquake'),
-        }[run]()
