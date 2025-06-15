@@ -1,0 +1,37 @@
+zensols.alsum package
+=====================
+
+Submodules
+----------
+
+zensols.alsum.app module
+------------------------
+
+.. automodule:: zensols.alsum.app
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.alsum.cli module
+------------------------
+
+.. automodule:: zensols.alsum.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zensols.alsum.graph module
+--------------------------
+
+.. automodule:: zensols.alsum.graph
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: zensols.alsum
+   :members:
+   :undoc-members:
+   :show-inheritance:
