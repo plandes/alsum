@@ -3,9 +3,9 @@
 [![PyPI][pypi-badge]][pypi-link]
 [![Python 3.10][python3100-badge]][python3100-link]
 [![Python 3.11][python311-badge]][python311-link]
-[![Build Status][build-badge]][build-link]
 
-Summarize text using Component ALignment Abstract Meaning Representation (CALAMR) alignment.
+Summarize text using Component ALignment Abstract Meaning Representation
+(CALAMR) alignment.
 
 
 ## Documentation
@@ -49,5 +49,3 @@ Copyright (c) 2024 Paul Landes
 [python3100-link]: https://www.python.org/downloads/release/python-3100
 [python311-badge]: https://img.shields.io/badge/python-3.11-blue.svg
 [python311-link]: https://www.python.org/downloads/release/python-3110
-[build-badge]: https://github.com/plandes/alsum/workflows/CI/badge.svg
-[build-link]: https://github.com/plandes/alsum/actions
