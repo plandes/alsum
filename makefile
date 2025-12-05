@@ -6,15 +6,14 @@
 #
 # type of project
 PROJ_TYPE =		python
-PROJ_MODULES =		git python-resources python-cli python-doc python-doc-deploy
-INFO_TARGETS +=		appinfo
+PROJ_MODULES =		python/doc python/package python/deploy
+PY_TEST_PRE_TARGETS +=	$(MICRO_CORP_FILE)
+ADD_CLEAN_ALL += 	data download corpus/micro/amr.txt
 
 
 ## Project
 #
-ENTRY = 		./alsum
-
-
+MICRO_CORP_FILE ?=	download/micro.txt.bz2
 
 
 ## Includes
@@ -24,14 +23,13 @@ include ./zenbuild/main.mk
 
 ## Targets
 #
-.PHONY:			appinfo
-appinfo:
-			@echo "app-resources-dir: $(RESOURCES_DIR)"
-
-
 # recreate the micro corpus using adhoc source/summary sentences in a JSON file
+$(MICRO_CORP_FILE):
+			@mkdir -p corpus/amr-rel
+			$(eval outfile := download/micro.txt.bz2)
+			@$(MAKE) pyharn ARG="mkadhoc"
+			@mkdir -p download
+			@( cat corpus/micro/amr.txt | bzip2 > $(MICRO_CORP_FILE) )
+			@$(call loginfo,created $(MICRO_CORP_FILE))
 .PHONY:			micro
-micro:			clean
-			$(ENTRY) mkadhoc --override calamr_corpus.name=adhoc
-			mkdir -p download
-			( cat corpus/micro/amr.txt | bzip2 > download/micro.txt.bz2 )
+micro:			$(MICRO_CORP_FILE)

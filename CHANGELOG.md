@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
+### Changed
+- Switch build tools to [pixi].
+- Upgraded [zensols.calamr] to 1.0.0.
+
+
 ## [0.0.1] - 2024-04-30
 ### Added
 - Initial version.
@@ -16,3 +21,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 <!-- links -->
 [Unreleased]: https://github.com/plandes/alsum/compare/v0.0.1...HEAD
 [0.0.1]: https://github.com/plandes/alsum/compare/v0.0.0...v0.0.1
+
+[zensols.datdesc]: https://github.com/plandes/calamr
+[pixi]: https://pixi.sh

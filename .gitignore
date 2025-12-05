@@ -3,3 +3,6 @@
 /target
 /data
 /download
+# pixi environments
+.pixi
+/pyproject.toml

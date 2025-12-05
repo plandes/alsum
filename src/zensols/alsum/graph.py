@@ -212,6 +212,7 @@ class ReducedGraphStash(ReadOnlyStash):
     """Whether :obj:`ReducedGraph.doc_graph` will have 0-flow edges pruned."""
 
     def load(self, name: str) -> ReducedGraph:
+        
         res: FlowGraphResult = self.factory.load(name)
         if res is not None:
             return ReducedGraph(
