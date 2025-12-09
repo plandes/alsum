@@ -8,15 +8,14 @@
 Summarize text using Component ALignment Abstract Meaning Representation (CALAMR) alignment.
 
 **Important**: This project is now deprecated in favor of the
-[FlowGraphResult.reduce] method.
+[FlowGraphResult.reduce] method.  See the [Aligning Ad hoc Documents] example
+of how to use it in the new version of [Calamr].
 
 
 ## Documentation
 
 See the [full documentation](https://plandes.github.io/alsum/index.html).  The
 [API reference](https://plandes.github.io/alsum/api.html) is also available.
-See the [Aligning Ad hoc Documents] example of how to use it in the new version
-of [Calamr].
 
 
 ## Obtaining
