@@ -7,12 +7,16 @@
 
 Summarize text using Component ALignment Abstract Meaning Representation (CALAMR) alignment.
 
+**Important**: This project is now deprecated in favor of the
+[FlowGraphResult.reduce] method.
+
 
 ## Documentation
 
-See the [full documentation](https://plandes.github.io/alsum/index.html).
-The [API reference](https://plandes.github.io/alsum/api.html) is also
-available.
+See the [full documentation](https://plandes.github.io/alsum/index.html).  The
+[API reference](https://plandes.github.io/alsum/api.html) is also available.
+See the [Aligning Ad hoc Documents] example of how to use it in the new version
+of [Calamr].
 
 
 ## Obtaining
@@ -51,3 +55,7 @@ Copyright (c) 2024 - 2025 Paul Landes
 [python311-link]: https://www.python.org/downloads/release/python-3110
 [build-badge]: https://github.com/plandes/alsum/workflows/CI/badge.svg
 [build-link]: https://github.com/plandes/alsum/actions
+
+[FlowGraphResult.reduce]: https://plandes.github.io/calamr/api/zensols.calamr.html#zensols.calamr.flow.FlowGraphResult.reduce
+[Aligning Ad hoc Documents]: https://github.com/plandes/calamr?tab=readme-ov-file#aligning-ad-hoc-documents
+[Calamr]: https://github.com/plandes/calamr
